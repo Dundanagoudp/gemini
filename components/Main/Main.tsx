@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { assets } from "@/assets/assets";
 import { Context } from "@/context/Context";
 import Image from 'next/image';
+import { Send, Circle } from 'lucide-react';
 
 const Main = () => {
   const context = useContext(Context);
@@ -11,7 +12,7 @@ const Main = () => {
     throw new Error('Main must be used within ContextProvider');
   }
 
-  const { onSent, recentPrompt, showResult, loading, resultData, setInput, input, conversationHistory } = context;
+  const { onSent, recentPrompt, showResult, loading, resultData, setInput, input, conversationHistory, stopGeneration } = context;
   const resultRef = useRef<HTMLDivElement>(null);
   const [rows, setRows] = useState(1);
 
@@ -196,7 +197,7 @@ const Main = () => {
                       height={40}
                     />
                   )}
-                  {loading ? (
+                  {loading && !resultData ? (
                     <div className="w-full flex flex-col gap-[10px]">
                       <hr className="rounded-[4px] border-none bg-gradient-to-r from-[#9ed7ff] via-white to-[#9ed7ff] bg-[length:800px_50px] h-5 animate-loader" />
                       <hr className="rounded-[4px] border-none bg-gradient-to-r from-[#9ed7ff] via-white to-[#9ed7ff] bg-[length:800px_50px] h-5 animate-loader" />
@@ -229,19 +230,23 @@ const Main = () => {
               className="flex-1 bg-transparent border-none outline-none px-2 text-[18px] py-[0.85rem] resize-none w-full md:p-0 p-[15px_10px] scrollbar-hide"
             />
             <div className="flex items-center md:gap-[10px] gap-[5px] md:ml-0 ml-auto">
-              <button className="p-[10px] bg-none border-none outline-none rounded-full cursor-pointer grid place-items-center hover:bg-[#e8eaed]">
-                <Image src={assets.gallery_icon} alt="" width={24} height={24} className="cursor-pointer" />
-              </button>
-              <button className="p-[10px] bg-none border-none outline-none rounded-full cursor-pointer grid place-items-center hover:bg-[#e8eaed]">
-                <Image src={assets.mic_icon} alt="" width={24} height={24} className="cursor-pointer" />
-              </button>
-              <button
-                type="submit"
-                onClick={() => onSent()}
-                className="p-[10px] bg-none border-none outline-none rounded-full cursor-pointer grid place-items-center hover:bg-[#e8eaed]"
-              >
-                <Image src={assets.send_icon} alt="" width={24} height={24} className="cursor-pointer" />
-              </button>
+              {loading ? (
+                <button
+                  type="button"
+                  onClick={() => stopGeneration()}
+                  className="p-[10px] bg-none border-none outline-none rounded-full cursor-pointer grid place-items-center hover:bg-[#e8eaed]"
+                >
+                  <Circle size={18} className="cursor-pointer text-[#585858]" fill="#585858" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  onClick={() => onSent()}
+                  className="p-[10px] bg-none border-none outline-none rounded-full cursor-pointer grid place-items-center hover:bg-[#e8eaed]"
+                >
+                  <Send size={24} className="cursor-pointer text-[#585858]" />
+                </button>
+              )}
             </div>
           </div>
           <p className="text-[13px] my-4 mx-auto text-center font-light">

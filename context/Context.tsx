@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useState, ReactNode, useEffect, useRef } from "react";
 
 interface Message {
   prompt: string;
@@ -20,6 +20,7 @@ interface ContextType {
   conversationHistory: Message[];
   setConversationHistory: (value: Message[] | ((prev: Message[]) => Message[])) => void;
   onSent: (prompt?: string) => Promise<void>;
+  stopGeneration: () => void;
   newChat: () => void;
 }
 
@@ -38,6 +39,8 @@ const ContextProvider = ({ children }: ContextProviderProps) => {
   const [resultData, setResultData] = useState("");
   const [conversationHistory, setConversationHistory] = useState<Message[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const typingTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
 
   // Load from localStorage after mount (client-side only)
   useEffect(() => {
@@ -60,9 +63,43 @@ const ContextProvider = ({ children }: ContextProviderProps) => {
   }, [isInitialized]);
 
   const delayPara = (index: number, nextWord: string) => {
-    setTimeout(function () {
+    const timeout = setTimeout(function () {
       setResultData((prev) => prev + nextWord);
     }, 75 * index);
+    typingTimeoutsRef.current.push(timeout);
+  };
+
+  const stopGeneration = () => {
+    // Cancel the fetch request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    
+    // Clear all typing timeouts
+    typingTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+    typingTimeoutsRef.current = [];
+    
+    // Stop loading immediately to hide stop icon
+    setLoading(false);
+    
+    // Save current progress to history if there's any result
+    if (resultData && recentPrompt) {
+      const currentPrompt = recentPrompt;
+      const currentResponse = resultData;
+      setTimeout(() => {
+        setConversationHistory((prev) => [
+          ...prev,
+          {
+            prompt: currentPrompt,
+            response: currentResponse,
+          },
+        ]);
+        setResultData("");
+      }, 100);
+    } else {
+      setResultData("");
+    }
   };
 
   // Save to localStorage whenever conversation history changes
@@ -95,34 +132,58 @@ const ContextProvider = ({ children }: ContextProviderProps) => {
   };
 
   const onSent = async (prompt?: string) => {
+    // Clear previous timeouts and abort any ongoing requests
+    typingTimeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+    typingTimeoutsRef.current = [];
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
     setResultData("");
     setLoading(true);
     setShowResult(true);
+    
+    // Create new AbortController for this request
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+    
     let response: string;
     
-    if (prompt !== undefined) {
-      setRecentPrompt(prompt);
-      const res = await fetch("/api/gemini", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt }),
-      });
-      const data = await res.json();
-      response = data.response;
-    } else {
-      setPrevPrompts((prev) => [...prev, input]);
-      setRecentPrompt(input);
-      const res = await fetch("/api/gemini", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt: input }),
-      });
-      const data = await res.json();
-      response = data.response;
+    try {
+      if (prompt !== undefined) {
+        setRecentPrompt(prompt);
+        const res = await fetch("/api/gemini", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt }),
+          signal,
+        });
+        if (signal.aborted) return;
+        const data = await res.json();
+        response = data.response;
+      } else {
+        setPrevPrompts((prev) => [...prev, input]);
+        setRecentPrompt(input);
+        const res = await fetch("/api/gemini", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: input }),
+          signal,
+        });
+        if (signal.aborted) return;
+        const data = await res.json();
+        response = data.response;
+      }
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        // Request was cancelled
+        return;
+      }
+      throw error;
     }
 
     let responseArray = response.split("**");
@@ -152,8 +213,8 @@ const ContextProvider = ({ children }: ContextProviderProps) => {
       delayPara(i, nextWord + " ");
     }
     
-    // Add to conversation history after typing animation completes
-    setTimeout(() => {
+    // Add to conversation history after typing animation completes and hide stop icon
+    const historyTimeout = setTimeout(() => {
       setConversationHistory((prev) => [
         ...prev,
         {
@@ -161,9 +222,12 @@ const ContextProvider = ({ children }: ContextProviderProps) => {
           response: fullResponse,
         },
       ]);
+      // Hide stop icon after typing animation completes
+      setLoading(false);
+      abortControllerRef.current = null;
     }, newResponseArray.length * 75 + 100);
+    typingTimeoutsRef.current.push(historyTimeout);
     
-    setLoading(false);
     setInput("");
   };
 
@@ -181,6 +245,7 @@ const ContextProvider = ({ children }: ContextProviderProps) => {
     newChat,
     conversationHistory,
     setConversationHistory,
+    stopGeneration,
   };
 
   return (
