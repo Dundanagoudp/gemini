@@ -142,12 +142,11 @@ const Main = () => {
             {/* Display conversation history */}
             {conversationHistory.map((message, index) => (
               <React.Fragment key={index}>
-                {/* User message - right side */}
-                <div className="my-10 flex items-center gap-3 justify-end">
+                {/* User message - right side (text only, no profile image) */}
+                <div className="my-10 flex justify-end">
                   <div className="bg-[#e8eaed] rounded-[18px] rounded-tr-[4px] px-4 py-2 max-w-[70%]">
                     <p className="break-all text-[#202124]">{message.prompt}</p>
                   </div>
-                  <Image src={assets.user_icon} alt="" width={40} height={40} className="rounded-full flex-shrink-0" />
                 </div>
                 {/* AI response - left side */}
                 <div className="flex items-start gap-3 mb-10">
@@ -171,11 +170,11 @@ const Main = () => {
              (conversationHistory.length === 0 || 
               conversationHistory[conversationHistory.length - 1].prompt !== recentPrompt) && (
               <>
-                <div className="my-10 flex items-center gap-3 justify-end">
+                {/* Current user prompt - text only, no profile image */}
+                <div className="my-10 flex justify-end">
                   <div className="bg-[#e8eaed] rounded-[18px] rounded-tr-[4px] px-4 py-2 max-w-[70%]">
                     <p className="break-all text-[#202124]">{recentPrompt}</p>
                   </div>
-                  <Image src={assets.user_icon} alt="" width={40} height={40} className="rounded-full flex-shrink-0" />
                 </div>
                 <div className="flex items-start gap-3 mb-[10vh]">
                   {loading ? (
