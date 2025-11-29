@@ -2,7 +2,7 @@
 
 <img src="https://github.com/user-attachments/assets/fe0d6fcd-8f52-4bac-adce-d3351fbb0af7" alt="google-gemini-icon" height="70" />
 
-# Gemini Clone
+# Gemini Clone (Next.js)
 
 ![GitHub Created At](https://img.shields.io/github/created-at/RanitManik/Gemini-Clone)
 ![Repo Size](https://img.shields.io/github/repo-size/RanitManik/Gemini-Clone)
@@ -17,9 +17,10 @@
 
 ## 🌟 What is Gemini Clone?
 
-**Gemini Clone** is a simple and clean chatbot web app built using **React**. It connects to the **Google Gemini API** to provide AI-powered answers — just like Google's real Gemini AI.
+**Gemini Clone** is a simple and clean chatbot web app built using **Next.js 15**, **React**, **TypeScript**, and **Tailwind CSS**.  
+It connects to the **Google Gemini API** through a Next.js API route to provide AI‑powered answers — just like Google's real Gemini AI.
 
-This project is perfect for learning how to work with APIs, build chat interfaces, and create React projects.
+This project is perfect for learning how to work with APIs, build chat interfaces, and create modern **Next.js** projects.
 
 ---
 
@@ -29,6 +30,8 @@ This project is perfect for learning how to work with APIs, build chat interface
 * [Features](#features)
 * [Getting Started](#getting-started)
 * [How to Use](#how-to-use)
+* [Project Structure](#project-structure)
+* [Scripts](#scripts)
 * [Contribute](#contribute)
 * [License](#license)
 * [Thanks](#thanks)
@@ -37,9 +40,10 @@ This project is perfect for learning how to work with APIs, build chat interface
 
 ## 🧠 Overview
 
-This web app lets you chat with an AI powered by the **Google Gemini API**. It mimics how the real Gemini chatbot works and responds in real time.
+This web app lets you chat with an AI powered by the **Google Gemini API**.  
+It mimics how the real Gemini chatbot works and responds in real time, using the **Next.js App Router**.
 
-Whether you're new to coding or just curious about how to build your own AI chatbot, this is a great place to start!
+Whether you're new to coding or just curious about how to build your own AI chatbot with Next.js, this is a great place to start!
 
 ---
 
@@ -49,12 +53,14 @@ Whether you're new to coding or just curious about how to build your own AI chat
 
 * **Chat Interface** – A clean and responsive design that works on any screen.
 * **Typing Animation** – The bot types responses just like a human would.
-* **AI Integration** – Connects directly to the Google Gemini API.
+* **AI Integration** – Uses a Next.js API route to call the Google Gemini API securely.
 
-### 🔹 Nice-to-Have Features
+### 🔹 Tech Stack
 
-* **Built with React** – Uses modern, component-based React code.
-* **Custom Styling** – Stylish and beginner-friendly UI.
+* **Next.js 15** (App Router)
+* **React 19**
+* **TypeScript**
+* **Tailwind CSS**
 
 ### 🔮 Future Ideas
 
@@ -77,7 +83,7 @@ Follow these steps to set it up on your own computer:
 2. **Move into the folder:**
 
    ```bash
-   cd Gemini-Clone
+   cd gemini
    ```
 
 3. **Install all the required packages:**
@@ -88,22 +94,22 @@ Follow these steps to set it up on your own computer:
 
 4. **Set up your API key:**
 
-   * Create a file named `.env.local` in the main folder.
+   * Create a file named `.env.local` in the project root.
    * Add this line with your Gemini API key:
 
      ```env
-     GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+     GEMINI_API_KEY=your_gemini_api_key_here
      ```
 
-5. **Run the app:**
+5. **Run the Next.js dev server:**
 
    ```bash
-   vite
+   npm run dev
    ```
 
 6. **Open in your browser:**
 
-   Go to [http://localhost:5173](http://localhost:5173)
+   Go to [http://localhost:3000](http://localhost:3000)
 
 ---
 
@@ -117,12 +123,39 @@ Once the app is running:
 
 ---
 
+## 🧱 Project Structure
+
+High‑level overview of the main folders:
+
+```text
+gemini/
+├── app/             # Next.js App Router (pages, layout, API routes)
+├── components/      # Reusable UI components (chat UI, sidebar, etc.)
+├── context/         # React Context (e.g. global app state)
+├── assets/          # TS asset exports/config
+└── public/          # Static files (including /public/assets images)
+```
+
+For more detailed setup and migration notes, see `SETUP.md`.
+
+---
+
+## 🛠 Scripts
+
+The most important npm scripts:
+
+* `npm run dev` – Start the Next.js development server.
+* `npm run build` – Build the production bundle.
+* `npm run start` – Start the production server.
+* `npm run lint` – Run ESLint.
+
+---
+
 ## 🤝 Contribute
 
 Want to help make this better? Great!
 
 1. Fork this repo
-
 2. Create a new branch:
 
    ```bash
@@ -147,8 +180,8 @@ Want to help make this better? Great!
 
 ## 📄 License
 
-This project is open-source and available under the **MIT License**.
-See the [LICENSE](LICENSE) file for more info.
+This project is open-source and available under the **MIT License**.  
+See the `LICENSE` file for more info.
 
 ---
 
