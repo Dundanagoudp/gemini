@@ -5,10 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        GEMINI_API_KEY: ${GEMINI_API_KEY}
+    env_file:
+      - .env
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      NODE_ENV: production
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
     restart: unless-stopped
     container_name: gemini-clone
