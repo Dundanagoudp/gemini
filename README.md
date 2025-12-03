@@ -94,8 +94,13 @@ Follow these steps to set it up on your own computer:
 
 4. **Set up your API key:**
 
-   * Create a file named `.env.local` in the project root.
-   * Add this line with your Gemini API key:
+   * Copy `.env.example` to `.env`:
+
+     ```bash
+     cp .env.example .env
+     ```
+
+   * Edit `.env` and add your Gemini API key:
 
      ```env
      GEMINI_API_KEY=your_gemini_api_key_here
@@ -148,6 +153,46 @@ The most important npm scripts:
 * `npm run build` – Build the production bundle.
 * `npm run start` – Start the production server.
 * `npm run lint` – Run ESLint.
+
+---
+
+## 🚀 Deploy to Vercel
+
+The easiest way to deploy this Next.js app is with **Vercel**:
+
+### One-Click Deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Dundanagoudp/gemini)
+
+### Manual Deployment
+
+1. **Install Vercel CLI** (optional):
+
+   ```bash
+   npm i -g vercel
+   ```
+
+2. **Push your code to GitHub**
+
+3. **Go to [vercel.com](https://vercel.com)** and sign in
+
+4. **Import your GitHub repository**
+
+5. **Add Environment Variable:**
+   * In Vercel dashboard → Settings → Environment Variables
+   * Add: `GEMINI_API_KEY` with your actual API key
+
+6. **Deploy!** – Vercel will automatically build and deploy your app
+
+### Environment Variables
+
+Make sure to add the following environment variable in your Vercel project settings:
+
+```
+GEMINI_API_KEY=your_actual_gemini_api_key_here
+```
+
+**Important:** Never commit your `.env` file with real API keys to GitHub!
 
 ---
 
